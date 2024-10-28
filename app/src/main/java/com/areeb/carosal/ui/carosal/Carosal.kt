@@ -1,12 +1,16 @@
 package com.areeb.carosal.ui.carosal
 
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.areeb.carosal.data.entity.BasicDto
+import kotlin.math.max
 
 
 @Composable
@@ -15,14 +19,22 @@ fun Carosale(
     list: List<BasicDto>
 ) {
     val state = rememberPagerState(initialPage = 0, pageCount = { list.size })
-    HorizontalPager(
-        modifier = Modifier.fillMaxWidth(),
-        state = state,
-    ) { page ->
+    BoxWithConstraints(modifier.fillMaxWidth()) {
+        val maxWidth = maxWidth
+        val pageWidth = maxWidth * 80.percent
+        val padding = maxWidth - pageWidth
+        val pageSpacing = 6.dp
+        HorizontalPager(
+            modifier = Modifier.fillMaxWidth(),
+            state = state,
+            pageSpacing = pageSpacing,
+            contentPadding = PaddingValues(horizontal = padding)
+        ) { page ->
 
-        val currentItem = list[page % list.size]
-        CarosalTemplate(basicDto = currentItem)
+            val currentItem = list[page % list.size]
+            CarosalTemplate(basicDto = currentItem)
 
+        }
     }
 }
 
