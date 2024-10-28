@@ -1,16 +1,22 @@
 package com.areeb.carosal.ui.carosal
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.areeb.carosal.data.entity.BasicDto
-import kotlin.math.max
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -18,7 +24,16 @@ fun Carosale(
     modifier: Modifier = Modifier,
     list: List<BasicDto>
 ) {
-    val state = rememberPagerState(initialPage = 0, pageCount = { list.size })
+    val pageCount = Int.MAX_VALUE
+    val pagerState = rememberPagerState(
+        initialPage = pageCount / 2, pageCount = { pageCount })
+    val animationScope = rememberCoroutineScope()
+    LaunchedEffect(key1 = pagerState.currentPage) {
+        delay(1000)
+        animationScope.launch {
+            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+        }
+    }
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val maxWidth = maxWidth
         val pageWidth = maxWidth * 80.percent
@@ -26,14 +41,20 @@ fun Carosale(
         val pageSpacing = 6.dp
         HorizontalPager(
             modifier = Modifier.fillMaxWidth(),
-            state = state,
+            state = pagerState,
             pageSpacing = pageSpacing,
             contentPadding = PaddingValues(horizontal = padding)
         ) { page ->
+            val actualPage = page % list.size
+            Box(
+                modifier = Modifier
+                    .width(pageWidth)
+                    .padding(top = 8.dp)
+            ) {
+                val currentItem = list[actualPage]
+                CarosalTemplate(basicDto = currentItem)
 
-            val currentItem = list[page % list.size]
-            CarosalTemplate(basicDto = currentItem)
-
+            }
         }
     }
 }
@@ -85,6 +106,26 @@ private fun PreviewCarosal() {
         ),
         BasicDto(
             name = "darkrai",
+            description = "Electric type",
+            level = 32,
+            thumblinkUrl =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmtWbqG-MW3qpselZGTqFVGT2NCletj8l8rw&s",
+            backgroundImage =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC14fXLSsOe9q7fCNB_DEqN7T343yFy8jxbQ&s"
+
+        ),
+        BasicDto(
+            name = "piggy",
+            description = "Electric type",
+            level = 32,
+            thumblinkUrl =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmtWbqG-MW3qpselZGTqFVGT2NCletj8l8rw&s",
+            backgroundImage =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC14fXLSsOe9q7fCNB_DEqN7T343yFy8jxbQ&s"
+
+        ),
+        BasicDto(
+            name = "chimchar",
             description = "Electric type",
             level = 32,
             thumblinkUrl =
